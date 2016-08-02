@@ -1,0 +1,73 @@
+Blueprint 的使用
+
+1，创建一个目录
+mkdir main
+
+2，在 main 目录下创建 __init__.py 文件，内容为
+from flask import Blueprint
+
+main = Blueprint('main', __name__)
+
+3，在 main 目录下创建 views.py，内容为
+from . import main
+
+4，在 main 目录下创建 __init__.py 文件中追加
+from . import views
+
+5，在 app 目录下创建 __init__.py 文件， 内容为
+from flask import Flask
+
+def create_app():
+    app = Flask(__name__)
+    
+    from .main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+    
+    return app
+
+6，在 app 同级目录下 创建 manager.py，内容为
+from app import create_app                       
+from flask.ext.script import Manager, Shell
+
+app = create_app()
+manager = Manager(app)
+manager.add_command("shell", Shell(make_context=make_shell_context))
+
+if __name__ == '__main__':
+    manager.run()
+
+如果要使用插件，则通过以下方式（以 sqlalchemy 为例）
+
+1，在 app 目录下创建 __init__.py 文件， 内容为
+from flask import Flask
+from flask.ext.sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+def create_app():
+    app = Flask(__name__)
+    
+    db.init_app(app)
+    
+    from .main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+    
+    return app
+    
+2，在 app 同级目录下 创建 manager.py，内容为
+from app import create_app                       
+from flask.ext.script import Manager, Shell
+
+app = create_app()
+manager = Manager(app)
+manager.add_command("shell", Shell(make_context=make_shell_context))
+
+if __name__ == '__main__':
+    manager.run()
+    
+3，如果需要 db， 则直接导入即可使用
+
+如果需要指定 url 前缀，在注册 Blueprint 的时候指定即可
+
+from .auth import auth as auth_blueprint
+app.register_blueprint(auth_blueprint, url_prefix='/auth')

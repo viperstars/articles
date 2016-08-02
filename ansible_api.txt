@@ -1,0 +1,56 @@
+import ansible.runner
+"""
+runner API执行完后返回的结构是一个 Python 字典，这个字典里面会有两个 key，分别是 contacted 和 dark
+contacted 里面存储着所有执行成功的信息，dark 里面存储着所有执行失败的信息
+
+{'contacted': {'192.168.1.111': {u'changed': True,
+   u'cmd': u'hostname',
+   u'delta': u'0:00:00.003639',
+   u'end': u'2016-07-28 14:58:36.584267',
+   'invocation': {'module_args': u'hostname',
+    'module_complex_args': {},
+    'module_name': 'shell'},
+   u'rc': 0,
+   u'start': u'2016-07-28 14:58:36.580628',
+   u'stderr': u'',
+   u'stdout': u'localhost.localdomain',
+   u'warnings': []},
+  '192.168.1.232': {u'changed': True,
+   u'cmd': u'hostname',
+   u'delta': u'0:00:00.003077',
+   u'end': u'2016-07-28 14:57:06.235237',
+   'invocation': {'module_args': u'hostname',
+    'module_complex_args': {},
+    'module_name': 'shell'},
+   u'rc': 0,
+   u'start': u'2016-07-28 14:57:06.232160',
+   u'stderr': u'',
+   u'stdout': u'www.ekwing.com',
+   u'warnings': []},
+ 'dark': {}}
+"""
+runner=ansible.runner.Runner(module_name='shell', module_args='hostname', pattern='all', forks=10)
+result=runner.run()
+
+for host, ret in result['contacted'].items():
+    print host,ret['stdout']
+    
+##############################################################################
+
+from ansible.inventory import Inventory
+from ansible.playbook  import PlayBook
+from ansible import callbacks
+"""
+{'192.168.1.116': {'changed': 0,
+    'failures': 0,    
+    'ok': 1,    
+    'skipped': 0,    
+    'unreachable': 0
+}}
+"""
+inventory = Inventory('./hosts')
+stats =  callbacks.AggregateStats()
+playbook_cb = callbacks.PlaybookCallbacks()
+runner_cb  = callbacks.PlaybookRunnerCallbacks(stats)
+results = PlayBook(playbook='key.yaml', callbacks=playbook_cb, runner_callbacks=runner_cb, stats=stats, inventory=inventory, extra_vars={'hosts':'all'}
+res = results.run()
