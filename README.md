@@ -8,3 +8,4 @@
 4. blueprint.txt，Flask 中 Blueprint 的简易使用文档
 5. execute.txt，MySQL-Python 中 execute 的正确使用方式，以及如何防止 SQL 注入
 6. thread.txt，Python 中线程安全概念的理解，DBPool 实现的方式，以及 threading 中两种锁机制的不同
+7. deco.py, Python 中装饰器示例，包括带参数和不带参数，以及可根据传入参数来判断的装饰器
