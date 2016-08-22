@@ -30,7 +30,10 @@ dis.dis(f)
   10 LOAD_CONST                0 (None)
   13 RETURN_VALUE
 
-Python 默认是每个线程执行100条字节码切换至其他线程
+那么 Python 在何时进行切换呢？
+
+1, 当线程执行 100 条字节码之后可能会切换至其他线程
+2, 在线程执行时遇到 I/O 操作会切换至其他线程
 
 https://github.com/Cito/w4py/blob/master/MiscUtils/DBPool.py
 
